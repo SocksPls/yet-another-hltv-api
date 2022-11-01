@@ -1,0 +1,1 @@
+This project is very much a work in progress, if you're looking for an HLTV API try https://github.com/SocksPls/hltv-api
