@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import pprint
 import re
+import get_soup
+
 
 # lib stuff
 def get_team_id(soup):
@@ -227,26 +229,30 @@ def get_maps(soup):
             map_scores = {
                 "name": map_result.find("div", {"class": "mapname"}).text,
                 "result": {
-                    "team1_total_rounds": int(
-                        map_result.find("div", {"class": "results-left"})
+                    "team1_total_rounds": (
+                        int(
+                            map_result.find("div", {"class": "results-left"})
+                            .find("div", {"class": "results-team-score"})
+                            .text.strip()
+                        )
+                        if map_result.find("div", {"class": "results-left"})
                         .find("div", {"class": "results-team-score"})
                         .text.strip()
-                    )
-                    if map_result.find("div", {"class": "results-left"})
-                    .find("div", {"class": "results-team-score"})
-                    .text.strip()
-                    != "-"
-                    else None,
-                    "team2_total_rounds": int(
-                        map_result.find("span", {"class": "results-right"})
+                        != "-"
+                        else None
+                    ),
+                    "team2_total_rounds": (
+                        int(
+                            map_result.find("span", {"class": "results-right"})
+                            .find("div", {"class": "results-team-score"})
+                            .text.strip()
+                        )
+                        if map_result.find("span", {"class": "results-right"})
                         .find("div", {"class": "results-team-score"})
                         .text.strip()
-                    )
-                    if map_result.find("span", {"class": "results-right"})
-                    .find("div", {"class": "results-team-score"})
-                    .text.strip()
-                    != "-"
-                    else None,
+                        != "-"
+                        else None
+                    ),
                 },
             }
 
@@ -441,19 +447,5 @@ def get_match(soup):
     return match
 
 
-# demo stuff
-def get_soup(url):
-    headers = {
-        "referer": "https://www.hltv.org/stats",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-    }
-
-    cookies = {"hltvTimeZone": "Europe/Copenhagen"}
-
-    return BeautifulSoup(
-        requests.get(url, headers=headers, cookies=cookies).text, "lxml"
-    )
-
-
 if __name__ == "__main__":
-    pprint.pprint(get_match(get_soup(input("Enter Match URL\n> "))))
+    pprint.pprint(get_match(get_soup.get_soup(input("Enter Match URL\n> "))))
